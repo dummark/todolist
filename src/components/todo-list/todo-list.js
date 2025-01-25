@@ -3,15 +3,11 @@ import TodoListItem from '../todo-list-item';
 
 import './todo-list.css';
 
-const TodoList = ({ todos }) => {
+const TodoList = ({ todos, onDeleted }) => {
 	const elements = todos.map(item => {
 		const { id, ...itemProps } = item;
 
-		return (
-			<li key={id} className='completed'>
-				<TodoListItem {...itemProps} />
-			</li>
-		);
+		return <TodoListItem {...itemProps} onDeleted={() => onDeleted(id)} />;
 	});
 
 	return <ul className='todo-list'>{elements}</ul>;

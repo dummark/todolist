@@ -6,23 +6,36 @@ import TodoList from '../todo-list';
 import Footer from '../footer';
 import './todo-app.css';
 
-const TodoApp = () => {
-	const todoData = [
-		{ label: 'eat', id: 1, completed: false },
-		{ label: 'drink', id: 2, completed: false },
-		{ label: 'study', id: 3, completed: false },
-	];
+export default class TodoApp extends Component {
+	state = {
+		todoData: [
+			{ label: 'eat', id: 1 },
+			{ label: 'drink', id: 2 },
+			{ label: 'study', id: 3 },
+		],
+	};
 
-	return (
-		<section className='todoapp'>
-			<AppHeader />
-			<NewTodo />
-			<section className='main'>
-				<TodoList todos={todoData} />
-				<Footer />
+	deleteItem = id => {
+		this.setState(({ todoData }) => {
+			const idx = todoData.findIndex(el => el.id === id);
+			const newTodo = todoData.toSpliced(idx, 1);
+			return { todoData: newTodo };
+		});
+	};
+
+	render() {
+		return (
+			<section className='todoapp'>
+				<AppHeader />
+				<NewTodo />
+				<section className='main'>
+					<TodoList
+						todos={this.state.todoData}
+						onDeleted={id => this.deleteItem(id)}
+					/>
+					<Footer />
+				</section>
 			</section>
-		</section>
-	);
-};
-
-export default TodoApp;
+		);
+	}
+}
