@@ -1,19 +1,11 @@
 import React, { Component } from 'react';
 import { formatDistanceToNowStrict } from 'date-fns';
-
 import './todo-list-item.css';
 
 export default class TodoListItem extends Component {
 	state = {
-		completed: false,
 		editing: false,
 		editValue: this.props.label,
-	};
-
-	onCheckBoxClick = () => {
-		this.setState(state => {
-			return { completed: !state.completed };
-		});
 	};
 
 	onEditClick = () => {
@@ -22,19 +14,24 @@ export default class TodoListItem extends Component {
 		});
 	};
 
-	saveAfterEdit = e => {
+	onSaveClick = e => {
 		if (e.key === 'Enter') {
-			this.setState({ editValue: e.target.value });
+			this.props.onEdit(this.props.id, this.state.editValue);
+			this.setState({ editing: false });
 		}
 	};
 
-	editChange = e => {
+	onInputChange = e => {
 		this.setState({ editValue: e.target.value });
 	};
 
 	render() {
-		const { label, id, editValue, onDeleted } = this.props;
-		const { completed, editing } = this.state;
+		const { id, date, onDeleted, onToggleCompleted, completed } = this.props;
+		const { editing, editValue } = this.state;
+
+		const timeOfCreate = formatDistanceToNowStrict(date, {
+			includeSeconds: true,
+		});
 
 		let classNames = [''];
 		if (completed) classNames.push('completed');
@@ -46,14 +43,11 @@ export default class TodoListItem extends Component {
 					<input
 						className='toggle'
 						type='checkbox'
-						onClick={this.onCheckBoxClick}
-						checked={completed}
+						onClick={onToggleCompleted}
 					/>
 					<label>
-						<span className='description'>{label}</span>
-						<span className='created'>
-							{formatDistanceToNowStrict(new Date(), { includeSeconds: true })}
-						</span>
+						<span className='description'>{editValue}</span>
+						<span className='created'>created {timeOfCreate} ago</span>
 					</label>
 					<button
 						className='icon icon-edit'
@@ -66,8 +60,8 @@ export default class TodoListItem extends Component {
 						type='text'
 						className='edit'
 						value={editValue}
-						onKeyDown={this.saveAfterEdit}
-						onChange={this.editChange}
+						onChange={this.onInputChange}
+						onKeyDown={this.onSaveClick}
 					/>
 				) : null}
 			</li>

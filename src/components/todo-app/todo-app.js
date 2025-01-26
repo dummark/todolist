@@ -8,12 +8,18 @@ import './todo-app.css';
 
 export default class TodoApp extends Component {
 	state = {
-		todoData: [
-			{ label: 'eat', id: 1 },
-			{ label: 'drink', id: 2 },
-			{ label: 'study', id: 3 },
-		],
+		todoData: [this.createTodoItem('study')],
+		filter: 'all',
 	};
+
+	createTodoItem(label) {
+		return {
+			label,
+			id: new Date(),
+			completed: false,
+			date: new Date(),
+		};
+	}
 
 	deleteItem = id => {
 		this.setState(({ todoData }) => {
@@ -23,17 +29,84 @@ export default class TodoApp extends Component {
 		});
 	};
 
+	addItem = text => {
+		const newItem = this.createTodoItem(text);
+		this.setState(({ todoData }) => {
+			const newTodo = [...todoData, newItem];
+			return { todoData: newTodo };
+		});
+	};
+
+	onToggleCompleted = id => {
+		this.setState(({ todoData }) => {
+			const idx = todoData.findIndex(el => el.id === id);
+
+			const oldItem = todoData[idx];
+
+			const newItem = { ...oldItem, completed: !oldItem.completed };
+
+			const newTodo = [
+				...todoData.slice(0, idx),
+				newItem,
+				...todoData.slice(idx + 1),
+			];
+			return { todoData: newTodo };
+		});
+	};
+
+	onEdit = (id, newLabel) => {
+		this.setState(({ todoData }) => ({
+			todoData: todoData.map(item =>
+				item.id === id ? { ...item, label: newLabel } : item
+			),
+		}));
+	};
+
+	filter(items, filter) {
+		switch (filter) {
+			case 'all':
+				return items;
+			case 'active':
+				return items.filter(item => !item.completed);
+			case 'completed':
+				return items.filter(item => item.completed);
+			default:
+				return items;
+		}
+	}
+
+	onFilterChange = filter => {
+		this.setState({ filter });
+	};
+
+	onCompleteClear = () => {
+		this.setState(({ todoData }) => {
+			return { todoData: todoData.filter(el => !el.completed) };
+		});
+	};
+
 	render() {
+		const { todoData, filter } = this.state;
+
+		const visibleItems = this.filter(todoData, filter);
+
 		return (
 			<section className='todoapp'>
 				<AppHeader />
-				<NewTodo />
+				<NewTodo onItemAdded={this.addItem} />
 				<section className='main'>
 					<TodoList
-						todos={this.state.todoData}
+						todos={visibleItems}
 						onDeleted={id => this.deleteItem(id)}
+						onToggleCompleted={this.onToggleCompleted}
+						onEdit={this.onEdit}
 					/>
-					<Footer />
+					<Footer
+						todoData={this.state.todoData}
+						filter={filter}
+						onFilterChange={this.onFilterChange}
+						onCompleteClear={this.onCompleteClear}
+					/>
 				</section>
 			</section>
 		);
