@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { formatDistanceToNowStrict } from 'date-fns';
 import './todo-list-item.css';
 
@@ -6,6 +7,11 @@ export default class TodoListItem extends Component {
 	state = {
 		editing: false,
 		editValue: this.props.label,
+	};
+
+	static defaultProps = {
+		onSaveClick: () => {},
+		onInputChange: () => {},
 	};
 
 	onEditClick = () => {
@@ -23,6 +29,12 @@ export default class TodoListItem extends Component {
 
 	onInputChange = e => {
 		this.setState({ editValue: e.target.value });
+	};
+
+	static propTypes = {
+		onSaveClick: PropTypes.func,
+		onInputChange: PropTypes.func,
+		onEditClick: PropTypes.func.isRequired,
 	};
 
 	render() {
@@ -44,6 +56,7 @@ export default class TodoListItem extends Component {
 						className='toggle'
 						type='checkbox'
 						onClick={onToggleCompleted}
+						checked={completed}
 					/>
 					<label>
 						<span className='description'>{editValue}</span>

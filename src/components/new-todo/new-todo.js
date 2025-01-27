@@ -7,6 +7,11 @@ export default class NewTodo extends Component {
 		label: '',
 	};
 
+	static defaultProps = {
+		onLabelChange: () => {},
+		onKeyDown: () => {},
+	};
+
 	onLabelChange = e => {
 		this.setState({ label: e.target.value });
 	};

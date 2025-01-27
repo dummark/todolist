@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import PropTypes from 'prop-types';
 import AppHeader from '../app-header';
 import NewTodo from '../new-todo';
 import TodoList from '../todo-list';
@@ -12,10 +12,32 @@ export default class TodoApp extends Component {
 		filter: 'all',
 	};
 
+	static defaultProps = {
+		createTodoItem: () => {},
+		deleteItem: () => {},
+		addItem: () => {},
+		onToggleCompleted: () => {},
+		onEdit: () => {},
+		filter: () => {},
+		onFilterChange: () => {},
+	};
+
+	static propTypes = {
+		createTodoItem: PropTypes.func,
+		deleteItem: PropTypes.func,
+		addItem: PropTypes.func,
+		onToggleCompleted: PropTypes.func,
+		onEdit: PropTypes.func,
+		filter: PropTypes.func,
+		onFilterChange: PropTypes.func,
+		onCompleteClear: PropTypes.func.isRequired,
+		todoData: PropTypes.arrayOf(PropTypes.object).isRequired,
+	};
+
 	createTodoItem(label) {
 		return {
 			label,
-			id: new Date(),
+			id: crypto.randomUUID(),
 			completed: false,
 			date: new Date(),
 		};
